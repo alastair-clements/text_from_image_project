@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 # Defines tesseract path
-pytesseract.pytesseract.tesseract_cmd = "/opt/homebrew/bin/tesseract"
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 def extract_text_from_image(image):
     try:
