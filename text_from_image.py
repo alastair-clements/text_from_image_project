@@ -2,47 +2,17 @@ import streamlit as st
 from PIL import Image
 import pytesseract
 import pandas as pd
-import os
-import subprocess
-import sys
+import shutil
 
-# Function to install a package using pip
-def install_package(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-# Try to import easyocr and install if not found
-try:
-    import pytesseract
-except ImportError:
-    st.warning("pytesseract not found. Installing...")
-    install_package("pytesseract")
-    import pytesseract
-
-# Ensure tesseract is installed and available in PATH, or provide the correct path
-# Use the path returned by `which tesseract`
-def install_tesseract():
-    try:
-        subprocess.run(['apt-get', 'update'], check=True)
-        subprocess.run(['apt-get', 'install', '-y', 'tesseract-ocr'], check=True)
-    except subprocess.CalledProcessError as e:
-        st.error(f"An error occurred while installing Tesseract: {e}")
-        return False
-    return True
-
-# Check if Tesseract is installed and install if not found
+# Ensure tesseract is installed and available in PATH
 tesseract_cmd = shutil.which("tesseract")
+st.write(f"Tesseract path: {tesseract_cmd}")  # Log the Tesseract path
+
 if tesseract_cmd:
     pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 else:
-    st.info("Tesseract not found. Installing...")
-    if install_tesseract():
-        tesseract_cmd = shutil.which("tesseract")
-        if tesseract_cmd:
-            pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
-        else:
-            st.error("Tesseract installation failed. Ensure it is installed and in your PATH.")
-    else:
-        st.error("Tesseract installation failed. Ensure it is installed and in your PATH.")
+    st.error("Tesseract not found. Ensure it is installed and in your PATH.")
+    st.stop()
 
 def extract_text_from_image(image):
     try:
