@@ -1,0 +1,6 @@
+[server]
+headless = true
+
+[server]
+port = $PORT
+enableCORS = false

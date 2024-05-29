@@ -4,6 +4,7 @@ import pytesseract
 import pandas as pd
 import shutil
 
+
 # Dynamically find Tesseract executable
 tesseract_cmd = shutil.which("tesseract")
 if tesseract_cmd:
