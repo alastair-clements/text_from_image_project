@@ -2,14 +2,18 @@ import streamlit as st
 from PIL import Image
 import pytesseract
 import pandas as pd
-import os
+import shutil
 
-# Defines tesseract path for Linux
-pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
+# Dynamically find Tesseract executable
+tesseract_cmd = shutil.which("tesseract")
+if tesseract_cmd:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+else:
+    st.error("Tesseract not found. Ensure it is installed and in your PATH.")
 
 def extract_text_from_image(image):
     try:
-        # Use pytesseract to do OCR on the image
         text = pytesseract.image_to_string(image)
         return text
     except Exception as e:
@@ -30,7 +34,7 @@ def process_images_to_csv(images, output_csv):
             st.error(f"Error processing {filename}: {e}")
             continue
 
-    # Adds extracted data to a dataframe and adds it to a csv
+    # Extracts data to a DF and writes to csv
     df = pd.DataFrame(list(zip(f, t)), columns=['file_Name', 'Text'])
     df.to_csv(output_csv, index=False)
     return df
@@ -38,7 +42,7 @@ def process_images_to_csv(images, output_csv):
 def main():
     st.title("Image Text Extractor")
 
-    # Creates uploader for image files.
+    # File uploader
     uploaded_files = st.file_uploader("Choose image files", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
 
     if uploaded_files:
